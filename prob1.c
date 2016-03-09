@@ -119,11 +119,11 @@ int main (int argc, char** argv)
 	{
 		int* temp = (int*)malloc(M * sizeof(int));
 		for(int k=0;k<N;k=k+2){
-			for(int l=0;l<size_;l++){
+			for(int l=0;l<size_;++l){
 			
 				
 				int* result=(int *)malloc(sizeof(int)*M*M);
-				MPI_Send(&k,1,MPI_INT,l+1,2,MPI_COMM_WORLD);
+				MPI_Send(&k,1,MPI_INT,l+1,2 + __END__,MPI_COMM_WORLD);
 		
 				MPI_Recv(temp,M,MPI_INT,l,l + 1 +__END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 				for(int j=0;j<M;j++){
@@ -136,7 +136,7 @@ int main (int argc, char** argv)
 	else
 	{	
 		int index;
-        MPI_Recv(&index,1,MPI_INT,0,2,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        MPI_Recv(&index,1,MPI_INT,0,2 + __END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
 	
 		int* result=(int *)malloc(sizeof(int)*M);
 
