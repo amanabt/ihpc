@@ -96,8 +96,78 @@ int main (int argc, char** argv)
 			printf ("%d ", A[i]);
 	}
 	
+	if (rank_ == MPI_MASTER)
+		for (int i = 1; i < size_; ++i)
+			MPI_Send(A, M * M * N, MPI_INT, i, DATA, MPI_COMM_WORLD);
+		
+	if (rank_ != MPI_MASTER) {
+		MPI_Recv (A,
+				  M * M * N,
+				  MPI_INT,
+				  MPI_MASTER,
+				  DATA,
+				  MPI_COMM_WORLD,
+				  MPI_STATUS_IGNORE);
+		for (int i = 0; i < N * M * M; ++i)
+			printf ("%d ", A[i]);
+	}
 	
 	
+// 	Divyat's Code
+
+	if(rank_==0)
+	{
+		int* temp = (int*)malloc(M * sizeof(int));
+		for(int k=0;k<N;k=k+2){
+			for(int l=0;l<size_;l++){
+			
+				
+				int* result=(int *)malloc(sizeof(int)*M*M);
+				MPI_Send(&k,1,MPI_INT,l+1,2,MPI_COMM_WORLD);
+		
+				MPI_Recv(temp,M,MPI_INT,l,l + 1 +__END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+				for(int j=0;j<M;j++){
+					result[l+j*M]=temp[j];
+				}
+			}
+		}		
+	}
+
+	else
+	{	
+		int index;
+        MPI_Recv(&index,1,MPI_INT,0,2,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+	
+		int* result=(int *)malloc(sizeof(int)*M);
+
+		for(int i=0;i<M;i++){
+			for(int j=0;j<M;j++){
+				result[i]+=A[index*N+i*M+j]*A[(index+1)*N+j*M+(rank_-1)*M];
+			}
+		}
+
+		MPI_Send(result,M,MPI_INT,0,rank_+__END__,MPI_COMM_WORLD);
+	}
+
+	MPI_Finalize();
+	exit (0);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // // 	printf ("%d", rank_);
 // // 	if (rank_ == 0)
 // // 		printf ("%d", rank_);
@@ -138,21 +208,37 @@ int main (int argc, char** argv)
 // 				  MPI_COMM_WORLD,
 // 				  MPI_STATUS_IGNORE);
 // // 		
-// // 		MPI_Recv (A,
-// // 				  M * M * N,
-// // 				  MPI_INT,
-// // 				  MPI_MASTER,
-// // 				  DATA,
-// // 				  MPI_COMM_WORLD,
-// // 				  MPI_STATUS_IGNORE);
+// 		MPI_Recv (A,
+// 				  M * M * N,
+// 				  MPI_INT,
+// 				  MPI_MASTER,
+// 				  DATA,
+// 				  MPI_COMM_WORLD,
+// 				  MPI_STATUS_IGNORE);
 // // 	printf ("%d %d", M, N);
 // // 	}
 // // 	
-	
 
-	MPI_Finalize();
-	exit (0);
-}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 // 	MPI_Init(&argc, &argv);
 // MPI_Comm_size(MPI_COMM_WORLD, &size_);
