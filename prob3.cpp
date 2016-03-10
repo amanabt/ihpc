@@ -178,7 +178,7 @@ int main (int argc, char** argv)
 	
 	for (int i = 0; i < N; ++i)
 		printf ("%c\n", results[i]);
-// 	printf ("\n");
+//	printf ("\n");
 	}
 	
 	MPI_Finalize();
