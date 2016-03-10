@@ -15,7 +15,7 @@ enum {
 int* alloc_1d (int N, int M)
 {
 	int *data = (int*)malloc(M * M * N * sizeof(int));
-	printf ("allocated\n");
+// 	printf ("allocated\n");
 	return data;
 }
 

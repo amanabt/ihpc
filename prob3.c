@@ -41,8 +41,8 @@ char is_aligned (int u1, int u2, int u3, int v1, int v2, int v3)
 
 int* alloc_1d (int size)
 {
-	int *data = (int*)malloc(size * sizeof(int));
-// 	printf ("allocated\n");
+	int* data = (int*)malloc(size * sizeof(int));
+	printf ("allocated\n");
 	return data;
 }
 
@@ -98,6 +98,7 @@ int main (int argc, char** argv)
 // 				printf ("Sent %d \n", rank);
 			}
 		}
+		free (temp);
 	}
 	
 	if (rank_ != MPI_MASTER) {
@@ -180,6 +181,8 @@ int main (int argc, char** argv)
 		printf ("%c\n", results[i]);
 // 	printf ("\n");
 	}
+	
+	free (A);
 	
 	MPI_Finalize();
 }
