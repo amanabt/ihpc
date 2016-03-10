@@ -19,6 +19,11 @@ int* alloc_1d (int N, int M)
 	return data;
 }
 
+int access (int * A, int n, int M, int i, int j)
+{
+	return A [(i * M + j) + (n * M * M)];
+}
+
 // void read (int* A, int N, int M)
 // {
 // 	for (int i = 0; i < N; ++i) {
@@ -112,64 +117,94 @@ int main (int argc, char** argv)
 			printf ("%d ", A[i]);
 	}
 	
-// 	Divyat's Code
-
-
-	if(rank_==0)
-	{
-		int* temp = (int*)malloc(M * sizeof(int));
-		int* result=(int *)malloc(sizeof(int) * M * M);
-		for (int i = 0; i < M * M; ++i) result [i] = 0;
-		for (int i = 0; i < M; ++i) temp [i] = 0;
-		for(int k = 0; k < N; k = k + 2){
-			for(int l=1;l <=M;++l){
-				MPI_Send(&k, 1, MPI_INT, l, 2 + __END__, MPI_COMM_WORLD);
-				printf ("Sent %d\n", 2 + __END__);
-				MPI_Recv(temp, M, MPI_INT, l%16, l + __END__, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-// 				for (int i = 0; i < M; ++i)
-// 					printf ("%d ", temp [i]);
-// 				printf ("Received 127 %d\n", rank_);
-				for(int j=0;j<M;j++){
-					result[l - 1 + j*M]=temp[j];
-				}
-// 				printf ("Hello %d\n", rank_);
-			}
-			for (int i = 0; i < M; ++i) {
-				for (int j = 0; j < M; ++j)
-					printf ("%d ", result [i * M + j]);
-				printf ("\n");
-			}
-		}
-		
-		
-	
-	}
-
-	else
-	{	
-		int index;
-        MPI_Recv(&index,1,MPI_INT,0,2 + __END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		printf ("Received %d\n", 2 + __END__);
-		int* result=(int *)malloc(sizeof(int)*M);
-		for (int i = 0; i < M; ++i) result[i] = 0;
-
-		for(int i = 0; i < M; i++){
-			for(int j = 0;j < M; j++){
-				result[i] += 
-					A[index*N+i*M+j]*A[(index+1)* M * M + j * M + (rank_ - 1)];
-			}
-		}
-		printf ("Received %d\n", 2 + __END__);
-		MPI_Send(result,M,MPI_INT,0,rank_+__END__,MPI_COMM_WORLD);
-// 		for (int i = 0; i < M; ++i)
-// 			printf ("%d %d ", rank_, result [i]);
-// 		printf ("Received %d\n", rank_ + __END__);
-	}
-	
+	for (int pair = 0; pair < N / 2; ++pair) {
+		for (int i = 0; i < rank_; ++i) {
+			for (A[i][j]
+					
+					
+				
 	MPI_Finalize();
 	exit (0);
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// // 	Divyat's Code
+// 
+// 
+// 	if(rank_==0)
+// 	{
+// 		int* temp = (int*)malloc(M * sizeof(int));
+// 		int* result=(int *)malloc(sizeof(int) * M * M);
+// 		for (int i = 0; i < M * M; ++i) result [i] = 0;
+// 		for (int i = 0; i < M; ++i) temp [i] = 0;
+// 		for(int k = 0; k < N; k = k + 2){
+// 			for(int l=1;l <=M;++l){
+// 				MPI_Send(&k, 1, MPI_INT, l, 2 + __END__, MPI_COMM_WORLD);
+// 				printf ("Sent %d\n", 2 + __END__);
+// 				MPI_Recv(temp, M, MPI_INT, l%16, l + __END__, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+// // 				for (int i = 0; i < M; ++i)
+// // 					printf ("%d ", temp [i]);
+// // 				printf ("Received 127 %d\n", rank_);
+// 				for(int j=0;j<M;j++){
+// 					result[l - 1 + j*M]=temp[j];
+// 				}
+// // 				printf ("Hello %d\n", rank_);
+// 			}
+// 			for (int i = 0; i < M; ++i) {
+// 				for (int j = 0; j < M; ++j)
+// 					printf ("%d ", result [i * M + j]);
+// 				printf ("\n");
+// 			}
+// 		}
+// 		
+// 		
+// 	
+// 	}
+// 
+// 	else
+// 	{	
+// 		int index;
+//         MPI_Recv(&index,1,MPI_INT,0,2 + __END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+// 		printf ("Received %d\n", 2 + __END__);
+// 		int* result=(int *)malloc(sizeof(int)*M);
+// 		for (int i = 0; i < M; ++i) result[i] = 0;
+// 
+// 		for(int i = 0; i < M; i++){
+// 			for(int j = 0;j < M; j++){
+// 				result[i] += 
+// 					A[index*N+i*M+j]*A[(index+1)* M * M + j * M + (rank_ - 1)];
+// 			}
+// 		}
+// 		printf ("Received %d\n", 2 + __END__);
+// 		MPI_Send(result,M,MPI_INT,0,rank_+__END__,MPI_COMM_WORLD);
+// // 		for (int i = 0; i < M; ++i)
+// // 			printf ("%d %d ", rank_, result [i]);
+// // 		printf ("Received %d\n", rank_ + __END__);
+// 	}
 
 
 
