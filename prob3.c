@@ -182,7 +182,8 @@ int main (int argc, char** argv)
 // 	printf ("\n");
 	}
 	
-	free (A);
+	if (rank_ == MPI_MASTER)
+		free (A);
 	
 	MPI_Finalize();
 }
