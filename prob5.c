@@ -29,7 +29,7 @@ int** allocate_2d_matrix (int m, int n)
 	{
 		mat[i] = &linear[i*n];
 	}
-	printf ("allocated\n");
+// 	printf ("allocated\n");
 	return mat;
 }
 
@@ -73,12 +73,20 @@ int main (int argc, char** argv)
 		{
 			for (int i = 0; i < size[n]; ++i) {
 				for (int j = 0; j < 4; ++j) {
-					printf ("%d ", A[n][i][j]);
+					printf ("%d \t", A[n][i][j]);
 				}
 				printf ("\n");
 			}
+			printf ("\n");
 		}
 	}
+	
+	if (rank_ == MPI_MASTER)
+	{
+		
+		
+	}
+	
 	if (rank_ == MPI_MASTER) {
 		free (size);
 		free (A);
