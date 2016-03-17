@@ -1,0 +1,3 @@
+CREATE TABLE  Faculty(Serial_No INT,Name VARCHAR(255),Roll_Number INT PRIMARY KEY, Department VARCHAR(255));
+CREATE TABLE  Course3(Serial_No INT,Roll_Number INT ,Assignment INT,Quiz INT,MIDSEM INT ,ENDSEM INT,Grade VARCHAR(255), FOREIGN KEY(Roll_Number) REFERENCES Student(Roll_Number));
+

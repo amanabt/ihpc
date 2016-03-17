@@ -15,7 +15,7 @@ enum {
 int* alloc_1d (int N, int M)
 {
 	int *data = (int*)malloc(M * M * N * sizeof(int));
-	printf ("allocated\n");
+//	printf ("allocated\n");
 	return data;
 }
 
@@ -35,9 +35,11 @@ int main (int argc, char** argv)
 {
 	int N;
 	int M;
+	int rank;
 	int rank_;
 	int size_;
 	int ec_;
+	int i,j,k;
 	const int MPI_MASTER = 0;
 	int* A;
 	
@@ -54,7 +56,7 @@ int main (int argc, char** argv)
 	}
 	
 	if (rank_ == MPI_MASTER) {
-		for (int rank = 1; rank < size_; ++rank) {
+		for ( rank = 1; rank < size_; ++rank) {
 			MPI_Send (&N, 1, MPI_INT, rank, MATRICES, MPI_COMM_WORLD);
 			MPI_Send (&M, 1, MPI_INT, rank, SIZE, MPI_COMM_WORLD);
 // 			MPI_Send (A, M * M * N, MPI_INT, rank, DATA, MPI_COMM_WORLD);
@@ -78,96 +80,123 @@ int main (int argc, char** argv)
 				MPI_COMM_WORLD,
 				MPI_STATUS_IGNORE);
 	
-	printf ("%d : %d : %d\n", rank_, N, M);
+//	printf ("%d : %d : %d\n", rank_, N, M);
 	}
 	
 	A = alloc_1d (N, M);
 	
 	if (rank_ == MPI_MASTER) {
-		for (int i = 0; i < N; ++i) {
-			for (int j = 0; j < M; ++j) {
-				for (int k = 0; k < M; ++k)
+		for (i = 0; i < 2*N; ++i) {
+			for (j = 0; j < M; ++j) {
+				for (k = 0; k < M; ++k)
 					scanf ("%d", &A [(j * M + k) + (i * M * M)]);
 // 				printf ("\n");
 			};
 // 			printf ("\n");
 		}
-		for (int i = 0; i < N * M * M; ++i)
-			printf ("%d ", A[i]);
+//		for (i = 0; i < N * M * M; ++i)
+///			printf ("%d ", A[i]);
 	}
 	
 	if (rank_ == MPI_MASTER)
-		for (int i = 1; i < size_; ++i)
-			MPI_Send(A, M * M * N, MPI_INT, i, DATA, MPI_COMM_WORLD);
+		for (i = 1; i < size_; ++i)
+			MPI_Send(A, M * M * 2*N, MPI_INT, i, DATA, MPI_COMM_WORLD);
 		
 	if (rank_ != MPI_MASTER) {
 		MPI_Recv (A,
-				  M * M * N,
+				  M * M * 2*N,
 				  MPI_INT,
 				  MPI_MASTER,
 				  DATA,
 				  MPI_COMM_WORLD,
 				  MPI_STATUS_IGNORE);
-		for (int i = 0; i < N * M * M; ++i)
-			printf ("%d ", A[i]);
+//		for (i = 0; i < N * M * M; ++i)
+//			printf ("%d ", A[i]);
 	}
 	
 // 	Divyat's Code
+k=0;
+int count=0;
 
-
+for( k = 0; k<N; ++k){
+	
 	if(rank_==0)
 	{
+		int l;
 		int* temp = (int*)malloc(M * sizeof(int));
 		int* result=(int *)malloc(sizeof(int) * M * M);
-		for (int i = 0; i < M * M; ++i) result [i] = 0;
-		for (int i = 0; i < M; ++i) temp [i] = 0;
-		for(int k = 0; k < N; k = k + 2){
-			for(int l=1;l < size_;++l){
-				MPI_Send(&k, 1, MPI_INT, l, 2 + __END__, MPI_COMM_WORLD);
-				printf ("Sent %d\n", 2 + __END__);
-				MPI_Recv(temp, M, MPI_INT, l, l + __END__, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-// 				for (int i = 0; i < M; ++i)
-// 					printf ("%d ", temp [i]);
-// 				printf ("Received 127 %d\n", rank_);
-				for(int j=0;j<M;j++){
+		for (i = 0; i < M * M; ++i) {result [i] = 0;}
+		for ( i = 0; i < M; ++i) {temp [i] = 0;}
+
+		for( l=1;l<=M;l++){
+
+				if(l%15==0){
+					MPI_Send(&k, 1, MPI_INT, 15, 2 + __END__, MPI_COMM_WORLD);	
+//					printf ("Sent %d\n", l);
+					MPI_Recv(temp, M, MPI_INT, 15, 2 + __END__, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		//			printf ("Received 2\n");
+				}
+				else{
+			
+					MPI_Send(&k, 1, MPI_INT, l%15, 2 + __END__, MPI_COMM_WORLD);
+//					printf ("Sent0 %d\n", l);
+					MPI_Recv(temp, M, MPI_INT, l%15, l%15 + __END__, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		//			printf ("Received0 2\n");
+				}
+					
+				for(j=0;j<M;j++){
 					result[l - 1 + j*M]=temp[j];
 				}
-// 				printf ("Hello %d\n", rank_);
-			}
-			for (int i = 0; i < M; ++i) {
-				for (int j = 0; j < M; ++j)
-					printf ("%d ", result [i * M + j]);
-				printf ("\n");
-			}
-		}
-		
-		
-	
-	}
 
+		}
+		for ( i = 0; i < M; i++) {
+			for (j = 0; j < M; j++){
+					printf ("%d ", result [i * M + j]);
+				}
+			printf ("\n");
+			}	
+		count=count+1;
+	//	if(count==N){
+		//	return 0;
+	//	}
+		printf("\n");
+		//printf("%d",count);
+	}
+	
 	else
 	{	
-		int index;
-        MPI_Recv(&index,1,MPI_INT,0,2 + __END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
-		printf ("Received %d\n", 2 + __END__);
-		int* result=(int *)malloc(sizeof(int)*M);
-		for (int i = 0; i < M; ++i) result[i] = 0;
 
-		for(int i = 0; i < M; i++){
-			for(int j = 0;j < M; j++){
-				result[i] += 
-					A[index*M*M+i*M+j]*A[(index+1)* M * M + j * M + (rank_ - 1)];
+		int index;
+		
+		
+			
+		//	printf("%d",count);
+		//	printf("\n");
+
+			MPI_Recv(&index,1,MPI_INT,0,2 + __END__,MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+		//	printf ("Received 2\n");
+
+			int* result=(int *)malloc(sizeof(int)*M);
+			for (i = 0; i < M; ++i) { 
+				result[i] = 0;
+			}	
+			for( i = 0; i < M; i++){
+				for(j = 0;j < M; j++){
+					result[i] += 
+					A[2*index*M*M+i*M+j]*A[(2*index+1)* M * M + j * M + (rank_ - 1)];
+				}
 			}
-		}
-		printf ("Received %d\n", 2 + __END__);
-		MPI_Send(result,M,MPI_INT,0,rank_+__END__,MPI_COMM_WORLD);
- 		for (int i = 0; i < M; ++i)
- 			printf ("%d %d ", rank_, result [i]);
- 		printf ("Received %d\n", rank_ + __END__);
+			MPI_Send(result,M,MPI_INT,0,rank_+__END__,MPI_COMM_WORLD);
+ 		//	printf ("Sent %d\n", rank_ );
+ 
+	   		
 	}
-	
+//	printf("%d",count);
+//	printf("\n");
+}
+	free(A);
 	MPI_Finalize();
-	exit (0);
+	return 0;
 }
 
 
